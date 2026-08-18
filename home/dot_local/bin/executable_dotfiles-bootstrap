@@ -1,0 +1,46 @@
+#!/bin/sh
+set -eu
+
+bin_dir="$HOME/.local/bin"
+mkdir -p "$bin_dir"
+
+if command -v mise >/dev/null 2>&1; then
+  mise_bin=$(command -v mise)
+elif [ -x "$bin_dir/mise" ]; then
+  mise_bin="$bin_dir/mise"
+else
+  command -v curl >/dev/null 2>&1 || {
+    printf 'curl is required to install mise.\n' >&2
+    exit 1
+  }
+  curl -fsSL https://mise.run | MISE_INSTALL_PATH="$bin_dir/mise" sh
+  mise_bin="$bin_dir/mise"
+fi
+
+export PATH="$bin_dir:$PATH"
+
+manage_system_packages=$(chezmoi execute-template '{{ .manageSystemPackages }}')
+profile=$(chezmoi execute-template '{{ .profile }}')
+
+if [ "$manage_system_packages" = true ]; then
+  "$mise_bin" bootstrap packages apply --update
+fi
+
+"$mise_bin" install
+
+if "$mise_bin" which git-lfs >/dev/null 2>&1; then
+  "$mise_bin" exec -- git lfs install
+fi
+
+if [ "$(uname -s)" = Darwin ] && [ "$profile" = workstation ]; then
+  if ! command -v brew >/dev/null 2>&1; then
+    printf '%s\n' \
+      'Homebrew is required for the workstation applications.' \
+      'Install it from https://brew.sh and run dotfiles-bootstrap again.' >&2
+    exit 1
+  fi
+  brewfile=$(chezmoi execute-template '{{ .chezmoi.workingTree }}/Brewfile')
+  brew bundle --file "$brewfile"
+fi
+
+printf 'Dotfiles tool bootstrap complete.\n'

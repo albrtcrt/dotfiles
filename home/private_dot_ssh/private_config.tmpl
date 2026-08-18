@@ -1,0 +1,21 @@
+# Machine-specific hosts and identity files belong in this unmanaged directory.
+# Includes are intentionally first so local values win over generic defaults.
+Include ~/.ssh/config.d/*
+
+{{ if eq .chezmoi.os "darwin" -}}
+# OrbStack manages this file when installed.
+Include ~/.orbstack/ssh/config
+
+{{ end -}}
+Host github.com
+    HostName github.com
+    User git
+    AddKeysToAgent yes
+{{ if eq .chezmoi.os "darwin" -}}
+    UseKeychain yes
+{{ end }}
+
+{{ if and (eq .chezmoi.os "darwin") .enableOnePassword -}}
+Host *
+    IdentityAgent "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+{{ end -}}

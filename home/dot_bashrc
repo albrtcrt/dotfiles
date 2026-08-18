@@ -1,0 +1,30 @@
+# ~/.bashrc: interactive Bash configuration for supported Linux hosts.
+
+case $- in
+  *i*) ;;
+  *) return ;;
+esac
+
+HISTCONTROL=ignoreboth
+HISTSIZE=5000
+HISTFILESIZE=10000
+shopt -s histappend checkwinsize
+
+if command -v dircolors >/dev/null 2>&1; then
+  if [ -r "$HOME/.dircolors" ]; then
+    eval "$(dircolors -b "$HOME/.dircolors")"
+  else
+    eval "$(dircolors -b)"
+  fi
+  alias ls='ls --color=auto'
+fi
+
+alias ll='ls -alF'
+
+if [ -r "$HOME/.bash_aliases" ]; then
+  . "$HOME/.bash_aliases"
+fi
+
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate bash)"
+fi

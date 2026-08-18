@@ -1,0 +1,30 @@
+{{- $defaultProfile := "server" -}}
+{{- if eq .chezmoi.os "darwin" -}}
+{{-   $defaultProfile = "workstation" -}}
+{{- end -}}
+{{- $profile := promptChoiceOnce . "profile" "Machine profile" (list "workstation" "server" "minimal") $defaultProfile -}}
+{{- $systemPackagesDefault := "yes" -}}
+{{- if eq $profile "minimal" -}}
+{{-   $systemPackagesDefault = "no" -}}
+{{- end -}}
+{{- $systemPackages := promptChoiceOnce . "manageSystemPackages" "Install operating-system packages" (list "yes" "no") $systemPackagesDefault -}}
+{{- $codexDefault := "yes" -}}
+{{- if eq $profile "minimal" -}}
+{{-   $codexDefault = "no" -}}
+{{- end -}}
+{{- $codex := promptChoiceOnce . "enableCodex" "Install Codex CLI" (list "yes" "no") $codexDefault -}}
+{{- $osid := .chezmoi.os -}}
+{{- if hasKey .chezmoi.osRelease "id" -}}
+{{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
+{{- end -}}
+
+umask = 0o022
+
+[data]
+profile = {{ $profile | quote }}
+manageSystemPackages = {{ eq $systemPackages "yes" }}
+enableCodex = {{ eq $codex "yes" }}
+enableOnePassword = {{ and (eq .chezmoi.os "darwin") (eq $profile "workstation") }}
+osid = {{ $osid | quote }}
+gitName = "albrtcrt"
+gitEmail = "85366724+albrtcrt@users.noreply.github.com"

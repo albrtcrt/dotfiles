@@ -1,0 +1,47 @@
+min_version = "2026.7.0"
+
+[tools]
+chezmoi = "latest"
+ripgrep = "latest"
+{{ if ne .profile "minimal" -}}
+go = "latest"
+golangci-lint = "latest"
+node = "lts"
+pnpm = "latest"
+python = "latest"
+uv = "latest"
+lazygit = "latest"
+typst = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"pipx:git-filter-repo" = "latest"
+"pipx:pipenv" = "latest"
+usage = "latest"
+git-lfs = "latest"
+{{ end -}}
+{{ if .enableCodex -}}
+"npm:@openai/codex" = "latest"
+{{ end }}
+
+{{ if and .manageSystemPackages (or (eq .osid "linux-debian") (eq .osid "linux-ubuntu")) -}}
+[bootstrap.packages]
+"apt:build-essential" = "latest"
+"apt:ca-certificates" = "latest"
+"apt:curl" = "latest"
+"apt:git" = "latest"
+"apt:unzip" = "latest"
+"apt:xz-utils" = "latest"
+"apt:zip" = "latest"
+"apt:zsh" = "latest"
+{{ else if and .manageSystemPackages (eq .osid "linux-fedora") -}}
+[bootstrap.packages]
+"dnf:ca-certificates" = "latest"
+"dnf:curl" = "latest"
+"dnf:gcc" = "latest"
+"dnf:gcc-c++" = "latest"
+"dnf:git" = "latest"
+"dnf:make" = "latest"
+"dnf:unzip" = "latest"
+"dnf:xz" = "latest"
+"dnf:zip" = "latest"
+"dnf:zsh" = "latest"
+{{ end -}}

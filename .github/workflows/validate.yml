@@ -1,0 +1,60 @@
+name: Validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Render (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install chezmoi
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b "$RUNNER_TEMP/bin"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+      - name: Validate
+        run: tests/validate.sh
+
+  render-linux:
+    name: Render (${{ matrix.container }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - container: debian:13
+            install: apt-get update && apt-get install -y ca-certificates curl git
+          - container: fedora:44
+            install: dnf install -y ca-certificates curl git
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate in container
+        env:
+          IMAGE: ${{ matrix.container }}
+          INSTALL: ${{ matrix.install }}
+        run: |
+          docker run --rm \
+            -e INSTALL="$INSTALL" \
+            -v "$GITHUB_WORKSPACE:/repo:ro" \
+            "$IMAGE" \
+            sh -c '/bin/sh -c "$INSTALL" && mkdir -p /tmp/bin && sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b /tmp/bin && PATH="/tmp/bin:$PATH" /repo/tests/validate.sh'
+
+  secrets:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2

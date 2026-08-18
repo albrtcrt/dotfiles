@@ -1,0 +1,17 @@
+# macOS workstation files
+{{ if or (ne .chezmoi.os "darwin") (ne .profile "workstation") }}
+Library/**
+.zprofile
+.zshenv
+.zshrc
+{{ end }}
+
+# Bash is the default interactive shell on supported Linux targets.
+{{ if ne .chezmoi.os "linux" }}
+.bashrc
+{{ end }}
+
+# Avoid an empty profile on unsupported operating systems.
+{{ if and (ne .chezmoi.os "darwin") (ne .chezmoi.os "linux") }}
+.profile
+{{ end }}
