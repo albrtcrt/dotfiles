@@ -9,6 +9,23 @@ sh -n "$repository_root/home/dot_bashrc"
 sh -n "$repository_root/home/.chezmoitemplates/profile_darwin.tmpl"
 sh -n "$repository_root/home/.chezmoitemplates/profile_linux.tmpl"
 
+if [ "$(uname -s)" = Linux ]; then
+  bash_prompt=$(
+    PS1='\s-\v\$ ' HOME=/tmp PATH=/usr/bin:/bin \
+      bash --noprofile --rcfile "$repository_root/home/dot_bashrc" \
+      -ic 'printf "%s\n" "$PS1"' 2>/dev/null
+  )
+
+  case "$bash_prompt" in
+    *'\u'*'\h'*'\w'* | *'\u'*'\h'*'\W'*) ;;
+    *)
+      printf 'Bash prompt does not include user, host, and directory: %s\n' \
+        "$bash_prompt" >&2
+      exit 1
+      ;;
+  esac
+fi
+
 if ! command -v chezmoi >/dev/null 2>&1; then
   printf 'chezmoi is required for render validation.\n' >&2
   exit 1

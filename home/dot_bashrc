@@ -5,6 +5,18 @@ case $- in
   *) return ;;
 esac
 
+# Fedora and related distributions expect each user's Bash configuration to
+# load the system-wide interactive defaults, including their standard prompt.
+if [ -r /etc/bashrc ]; then
+  . /etc/bashrc
+fi
+
+# Preserve a useful prompt on distributions that leave Bash's minimal default
+# unchanged. Bash expands these escapes when it displays the prompt.
+if [ "${PS1-}" = '\s-\v\$ ' ]; then
+  PS1='\u@\h:\w\$ '
+fi
+
 HISTCONTROL=ignoreboth
 HISTSIZE=5000
 HISTFILESIZE=10000
