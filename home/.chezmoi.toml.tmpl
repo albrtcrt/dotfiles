@@ -18,6 +18,7 @@
 {{-   $osid = printf "%s-%s" .chezmoi.os .chezmoi.osRelease.id -}}
 {{- end -}}
 
+sourceDir = {{ .chezmoi.workingTree | quote }}
 umask = 0o022
 
 [data]

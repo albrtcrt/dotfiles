@@ -62,6 +62,29 @@ case "$(uname -s)" in
     ;;
 esac
 
+generated_config="$validation_dir/generated-chezmoi.toml"
+HOME="$validation_dir/home" chezmoi \
+  --source "$repository_root" \
+  --output "$generated_config" \
+  execute-template \
+  --init \
+  --promptChoice "Machine profile=$profile" \
+  --promptChoice "Install operating-system packages=yes" \
+  --promptChoice "Install Codex CLI=yes" \
+  --file "$repository_root/home/.chezmoi.toml.tmpl"
+
+generated_source=$(
+  HOME="$validation_dir/home" chezmoi \
+    --config "$generated_config" \
+    source-path
+)
+expected_source="$repository_root/home"
+if [ "$generated_source" != "$expected_source" ]; then
+  printf 'Generated config forgot source directory: expected %s, got %s\n' \
+    "$expected_source" "$generated_source" >&2
+  exit 1
+fi
+
 cat >"$validation_dir/chezmoi.toml" <<EOF
 umask = 0o022
 
