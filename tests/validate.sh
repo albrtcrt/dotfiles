@@ -4,7 +4,7 @@ set -eu
 repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
 sh -n "$repository_root/bootstrap.sh"
-sh -n "$repository_root/home/dot_local/bin/executable_dotfiles-bootstrap"
+sh -n "$repository_root/home/private_dot_local/bin/executable_dotfiles-bootstrap"
 sh -n "$repository_root/home/dot_bashrc"
 sh -n "$repository_root/home/.chezmoitemplates/profile_darwin.tmpl"
 sh -n "$repository_root/home/.chezmoitemplates/profile_linux.tmpl"
@@ -103,5 +103,25 @@ HOME="$validation_dir/home" chezmoi \
   --source "$repository_root" \
   --destination "$validation_dir/home" \
   apply --dry-run
+
+mkdir -p "$validation_dir/home/.local"
+chmod 700 "$validation_dir/home/.local"
+
+HOME="$validation_dir/home" chezmoi \
+  --config "$validation_dir/chezmoi.toml" \
+  --source "$repository_root" \
+  --destination "$validation_dir/home" \
+  apply --include=dirs
+
+case "$(uname -s)" in
+  Darwin) local_mode=$(stat -f '%Lp' "$validation_dir/home/.local") ;;
+  Linux) local_mode=$(stat -c '%a' "$validation_dir/home/.local") ;;
+  *) local_mode=700 ;;
+esac
+
+if [ "$local_mode" != 700 ]; then
+  printf 'Rendered ~/.local mode is %s, expected 700\n' "$local_mode" >&2
+  exit 1
+fi
 
 printf 'Validation passed.\n'
