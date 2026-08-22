@@ -1,7 +1,11 @@
+# Make Homebrew-installed tools available before config.nu imports generated
+# modules. This path is specific to supported Apple Silicon Macs.
 if "/opt/homebrew/bin" not-in $env.PATH {
   $env.PATH = ($env.PATH | prepend "/opt/homebrew/bin")
 }
 
+# These modules are generated before config.nu is parsed. They are deliberately
+# machine state, not chezmoi-managed dotfiles, so they can track tool updates.
 let mise_path = $nu.default-config-dir | path join "mise.nu"
 let carapace_path = $nu.default-config-dir | path join "carapace.nu"
 let carapace_version_path = $nu.default-config-dir | path join "carapace.version"
