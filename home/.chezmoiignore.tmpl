@@ -8,6 +8,7 @@ Library/**
 
 # Bash is the default interactive shell on supported Linux targets.
 {{ if ne .chezmoi.os "linux" }}
+.bash_profile
 .bashrc
 {{ end }}
 

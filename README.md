@@ -72,6 +72,13 @@ chmod 600 ~/.ssh/config.d/*
 The `private_` prefix in chezmoi source names controls target permissions; it
 does not make repository contents secret.
 
+## Local Git authentication
+
+The managed `~/.gitconfig` includes `~/.gitconfig.local`. Keep credential
+helpers and other machine-specific Git settings in that unmanaged file so a
+chezmoi apply cannot remove them and the public repository never contains
+authentication details.
+
 ## Tool policy
 
 Mise is the source of truth for language runtimes and portable developer CLIs.
