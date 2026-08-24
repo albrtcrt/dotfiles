@@ -5,6 +5,7 @@ repository_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 
 sh -n "$repository_root/bootstrap.sh"
 sh -n "$repository_root/home/private_dot_local/bin/executable_dotfiles-bootstrap"
+sh -n "$repository_root/home/dot_bash_profile"
 sh -n "$repository_root/home/dot_bashrc"
 sh -n "$repository_root/home/.chezmoitemplates/profile_darwin.tmpl"
 sh -n "$repository_root/home/.chezmoitemplates/profile_linux.tmpl"
@@ -121,6 +122,37 @@ esac
 
 if [ "$local_mode" != 700 ]; then
   printf 'Rendered ~/.local mode is %s, expected 700\n' "$local_mode" >&2
+  exit 1
+fi
+
+HOME="$validation_dir/home" chezmoi \
+  --config "$validation_dir/chezmoi.toml" \
+  --source "$repository_root" \
+  --destination "$validation_dir/home" \
+  apply
+
+git_include=$(
+  git config --file "$validation_dir/home/.gitconfig" --get include.path
+)
+if [ "$git_include" != "~/.gitconfig.local" ]; then
+  printf 'Git configuration does not include ~/.gitconfig.local.\n' >&2
+  exit 1
+fi
+
+if [ "$(uname -s)" = Linux ]; then
+  login_path=$(
+    HOME="$validation_dir/home" PATH=/usr/bin:/bin \
+      bash -c '. "$HOME/.bash_profile"; printf "%s\n" "$PATH"'
+  )
+  case ":$login_path:" in
+    *":$validation_dir/home/.local/bin:"*) ;;
+    *)
+      printf 'Linux login profile does not add ~/.local/bin to PATH.\n' >&2
+      exit 1
+      ;;
+  esac
+elif [ -e "$validation_dir/home/.bash_profile" ]; then
+  printf '.bash_profile must only be managed on Linux.\n' >&2
   exit 1
 fi
 

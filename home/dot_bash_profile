@@ -1,0 +1,5 @@
+# ~/.bash_profile: route Bash login shells through the shared profile.
+
+if [ -r "$HOME/.profile" ]; then
+  . "$HOME/.profile"
+fi
