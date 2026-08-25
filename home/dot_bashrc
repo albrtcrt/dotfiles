@@ -17,6 +17,22 @@ if [ "${PS1-}" = '\s-\v\$ ' ]; then
   PS1='\u@\h:\w\$ '
 fi
 
+# Fedora terminals normally start non-login shells, so they cannot rely on
+# ~/.profile to make user-installed commands and mise shims available.
+for dotfiles_path in \
+  "$HOME/.local/bin" \
+  "$HOME/.local/share/mise/shims"
+do
+  if [ -d "$dotfiles_path" ]; then
+    case ":$PATH:" in
+      *":$dotfiles_path:"*) ;;
+      *) PATH="$dotfiles_path:$PATH" ;;
+    esac
+  fi
+done
+unset dotfiles_path
+export PATH
+
 HISTCONTROL=ignoreboth
 HISTSIZE=5000
 HISTFILESIZE=10000

@@ -19,6 +19,11 @@ fi
 
 export PATH="$bin_dir:$PATH"
 
+mise_config="$HOME/.config/mise/config.toml"
+if [ -f "$mise_config" ]; then
+  "$mise_bin" trust --yes "$mise_config"
+fi
+
 manage_system_packages=$(chezmoi execute-template '{{ .manageSystemPackages }}')
 profile=$(chezmoi execute-template '{{ .profile }}')
 
