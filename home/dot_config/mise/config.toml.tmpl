@@ -17,6 +17,7 @@ typst = "latest"
 "pipx:pipenv" = "latest"
 usage = "latest"
 git-lfs = "latest"
+zellij = "latest"
 {{ end -}}
 {{ if .enableCodex -}}
 "npm:@openai/codex" = "latest"
@@ -32,6 +33,7 @@ git-lfs = "latest"
 "apt:xz-utils" = "latest"
 "apt:zip" = "latest"
 "apt:zsh" = "latest"
+"apt:vim" = "latest"
 {{ else if and .manageSystemPackages (eq .osid "linux-fedora") -}}
 [bootstrap.packages]
 "dnf:ca-certificates" = "latest"
@@ -44,4 +46,5 @@ git-lfs = "latest"
 "dnf:xz" = "latest"
 "dnf:zip" = "latest"
 "dnf:zsh" = "latest"
+"dnf:vim-enhanced" = "latest"
 {{ end -}}
