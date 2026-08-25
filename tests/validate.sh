@@ -151,6 +151,19 @@ if [ "$(uname -s)" = Linux ]; then
       exit 1
       ;;
   esac
+
+  non_login_path=$(
+    HOME="$validation_dir/home" PATH=/usr/bin:/bin \
+      bash --noprofile --rcfile "$validation_dir/home/.bashrc" \
+      -ic 'printf "%s\n" "$PATH"' 2>/dev/null
+  )
+  case ":$non_login_path:" in
+    *":$validation_dir/home/.local/bin:"*) ;;
+    *)
+      printf 'Linux non-login Bash does not add ~/.local/bin to PATH.\n' >&2
+      exit 1
+      ;;
+  esac
 elif [ -e "$validation_dir/home/.bash_profile" ]; then
   printf '.bash_profile must only be managed on Linux.\n' >&2
   exit 1
