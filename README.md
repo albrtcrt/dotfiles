@@ -17,10 +17,9 @@ hosts, infrastructure addresses, project clones, and service state.
 | Ubuntu | `server` | APT | Bash |
 | Fedora | `server` | DNF | Bash |
 
-`minimal` is also available for short-lived machines. Initialization asks
-whether system packages and Codex CLI should be installed. These choices are
-stored in chezmoi's local configuration; behavior never depends on a Unix
-username.
+Initialization asks whether operating-system packages should be installed. The
+answer is stored in chezmoi's local configuration; behavior never depends on a
+Unix username.
 
 ## Bootstrap a new machine
 
@@ -81,10 +80,33 @@ authentication details.
 
 ## Tool policy
 
-Mise is the source of truth for language runtimes and portable developer CLIs.
-Runtime release channels and current CLI releases are used intentionally, so
-`mise upgrade` advances the environment. Homebrew remains responsible for
-macOS-native applications and utilities.
+Mise is the source of truth for language runtimes, portable developer CLIs, and
+system packages. Runtime release channels and current CLI releases are used
+intentionally, so `mise upgrade` advances the environment.
+
+The configuration lives in `mise/`, and chezmoi links each file in
+`~/.config/mise/` to its repository copy. Commands that change the global
+configuration, such as `mise use -g`, therefore edit the repository directly
+and show up in `git status`.
+
+| File | Loaded on | Contents |
+| --- | --- | --- |
+| `config.toml` | every machine | Runtimes and CLIs |
+| `config.macos.toml` | macOS | Homebrew formulae and casks |
+| `config.linux.toml` | Linux | APT and DNF packages |
+| `miserc.toml` | every machine | `auto_env`, which selects the OS file |
+
+Homebrew packages install into the normal Homebrew prefix, so `brew upgrade`
+keeps working. Apps that were installed by hand are adopted rather than
+replaced.
+
+Machine-specific settings belong in `~/.config/mise/config.local.toml`, which
+is not linked into the repository. For example, to skip a tool on one machine:
+
+```toml
+[settings]
+disable_tools = ["npm:@openai/codex"]
+```
 
 ## Daily use
 
@@ -95,6 +117,9 @@ chezmoi apply
 chezmoi update
 chezmoi verify
 mise install
+mise use -g <tool>
+mise bootstrap packages use -p ~/.config/mise/config.macos.toml brew:<formula>
+mise bootstrap packages use -p ~/.config/mise/config.macos.toml brew-cask:<app>
 ```
 
 For anonymous fetches and authenticated authoring, use separate remote URLs:

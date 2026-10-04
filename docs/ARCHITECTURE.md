@@ -8,21 +8,30 @@ accounts, SSH servers, firewalls, container daemons, production services, or
 cloud infrastructure.
 
 Chezmoi owns dotfiles. Mise owns language runtimes, portable command-line
-tools, and the declared APT or DNF prerequisites. Homebrew owns macOS-native
-applications.
+tools, and system packages: Homebrew formulae and casks on macOS, APT or DNF
+packages on Linux.
 
 ## Machine selection
 
-Initialization records three pieces of local data:
+Initialization records two pieces of local data:
 
-- `profile`: `workstation`, `server`, or `minimal`
+- `profile`: `workstation` or `server`
 - `manageSystemPackages`: whether bootstrap may invoke the native package
   manager and sudo
-- `enableCodex`: whether Codex CLI belongs in the mise tool set
 
-Operating-system behavior comes from `.chezmoi.os` and Linux distribution
-behavior comes from `.chezmoi.osRelease.id`. Unix usernames and hostnames do
-not select configuration.
+Dotfile behavior comes from `.chezmoi.os`. Tool and package behavior comes from
+mise's `auto_env` setting, which loads `config.macos.toml` or
+`config.linux.toml`. On Linux, mise skips package managers the machine does not
+have, so APT entries apply to Debian and Ubuntu and DNF entries to Fedora. Unix
+usernames and hostnames do not select configuration.
+
+## Mise configuration
+
+Mise writes to its global configuration when tools or packages are added, so
+those files are not chezmoi templates. The repository keeps them in `mise/`,
+and chezmoi links each file in `~/.config/mise/` to its repository copy.
+Machine-specific overrides go in `~/.config/mise/config.local.toml`, which
+stays outside the repository.
 
 ## Repository boundary
 
@@ -42,14 +51,19 @@ files are the boundary for machine-specific connectivity.
 ## Source layout
 
 `.chezmoiroot` maps `home/` onto the destination home directory. Files outside
-`home/` are repository support files and are not applied by chezmoi.
+`home/` are repository support files and are not applied by chezmoi, except
+that chezmoi links the files in `mise/` into `~/.config/mise/`.
 
 ```text
 .
 ├── .chezmoiroot
 ├── bootstrap.sh
-├── Brewfile
 ├── docs/
+├── mise/
+│   ├── config.toml
+│   ├── config.macos.toml
+│   ├── config.linux.toml
+│   └── miserc.toml
 ├── tests/
 └── home/
     ├── .chezmoi.toml.tmpl
