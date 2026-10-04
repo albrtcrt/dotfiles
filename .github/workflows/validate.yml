@@ -18,10 +18,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install chezmoi
+      - name: Install chezmoi and mise
         run: |
           mkdir -p "$RUNNER_TEMP/bin"
           sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b "$RUNNER_TEMP/bin"
+          curl -fsSL https://mise.run | MISE_INSTALL_PATH="$RUNNER_TEMP/bin/mise" sh
           echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
       - name: Validate
         run: tests/validate.sh
@@ -36,7 +37,7 @@ jobs:
           - container: debian:13
             install: apt-get update && apt-get install -y ca-certificates curl git
           - container: fedora:44
-            install: dnf install -y ca-certificates curl git
+            install: dnf install -y ca-certificates curl git tar
     steps:
       - uses: actions/checkout@v4
       - name: Validate in container
@@ -48,7 +49,7 @@ jobs:
             -e INSTALL="$INSTALL" \
             -v "$GITHUB_WORKSPACE:/repo:ro" \
             "$IMAGE" \
-            sh -c '/bin/sh -c "$INSTALL" && mkdir -p /tmp/bin && sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b /tmp/bin && PATH="/tmp/bin:$PATH" /repo/tests/validate.sh'
+            sh -c '/bin/sh -c "$INSTALL" && mkdir -p /tmp/bin && sh -c "$(curl -fsLS https://get.chezmoi.io)" -- -b /tmp/bin && curl -fsSL https://mise.run | MISE_INSTALL_PATH=/tmp/bin/mise sh && PATH="/tmp/bin:$PATH" /repo/tests/validate.sh'
 
   secrets:
     name: Secret scan

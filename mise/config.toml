@@ -1,0 +1,23 @@
+# Tools for every machine. ~/.config/mise/config.toml links to this file, so
+# `mise use -g <tool>` records the tool here.
+min_version = "2026.10.0"
+
+[tools]
+chezmoi = "latest"
+ripgrep = "latest"
+go = "latest"
+golangci-lint = "latest"
+node = "lts"
+pnpm = "latest"
+python = "latest"
+uv = "latest"
+lazygit = "latest"
+typst = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"pipx:git-filter-repo" = "latest"
+"pipx:pipenv" = "latest"
+usage = "latest"
+git-lfs = "latest"
+zellij = "latest"
+"npm:@openai/codex" = "latest"
+claude = "latest"

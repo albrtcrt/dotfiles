@@ -1,0 +1,35 @@
+# Homebrew packages for macOS. mise loads this file only on macOS (see
+# miserc.toml) and installs into the normal Homebrew prefix, so `brew upgrade`
+# and topgrade keep working. Add a package with:
+#   mise bootstrap packages use -p ~/.config/mise/config.macos.toml brew:<name>
+
+[bootstrap.brew]
+# Keep apps that were installed by hand instead of replacing them.
+adopt = true
+
+[bootstrap.packages]
+# Bootstrap and shells
+"brew:bash" = "latest"
+"brew:carapace" = "latest"
+"brew:mise" = "latest"
+"brew:nushell" = "latest"
+"brew:topgrade" = "latest"
+"brew:zsh-autocomplete" = "latest"
+
+# Developer tools not managed by mise
+"brew:cmake" = "latest"
+"brew:goose" = "latest"
+"brew:gzip" = "latest"
+"brew:llama.cpp" = "latest"
+"brew:poppler" = "latest"
+"brew:tcl-tk" = "latest"
+
+# macOS utilities
+"brew:mactop" = "latest"
+"brew:tw93/tap/mole" = "latest"
+"brew-cask:1password" = "latest"
+"brew-cask:boop" = "latest"
+"brew-cask:dbeaver-community" = "latest"
+"brew-cask:dockdoor" = "latest"
+"brew-cask:macpacker" = "latest"
+"brew-cask:orbstack" = "latest"

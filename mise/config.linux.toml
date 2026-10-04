@@ -1,0 +1,25 @@
+# System packages for Linux. mise loads this file only on Linux (see
+# miserc.toml) and skips package managers the machine doesn't have, so the apt
+# entries apply to Debian and Ubuntu and the dnf entries apply to Fedora.
+
+[bootstrap.packages]
+"apt:build-essential" = "latest"
+"apt:ca-certificates" = "latest"
+"apt:curl" = "latest"
+"apt:git" = "latest"
+"apt:unzip" = "latest"
+"apt:xz-utils" = "latest"
+"apt:zip" = "latest"
+"apt:zsh" = "latest"
+"apt:vim" = "latest"
+"dnf:ca-certificates" = "latest"
+"dnf:curl" = "latest"
+"dnf:gcc" = "latest"
+"dnf:gcc-c++" = "latest"
+"dnf:git" = "latest"
+"dnf:make" = "latest"
+"dnf:unzip" = "latest"
+"dnf:xz" = "latest"
+"dnf:zip" = "latest"
+"dnf:zsh" = "latest"
+"dnf:vim-enhanced" = "latest"

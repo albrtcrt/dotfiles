@@ -25,8 +25,8 @@ if [ -f "$mise_config" ]; then
 fi
 
 manage_system_packages=$(chezmoi execute-template '{{ .manageSystemPackages }}')
-profile=$(chezmoi execute-template '{{ .profile }}')
 
+# Homebrew formulae and casks on macOS, APT or DNF packages on Linux.
 if [ "$manage_system_packages" = true ]; then
   "$mise_bin" bootstrap packages apply --update
 fi
@@ -35,17 +35,6 @@ fi
 
 if "$mise_bin" which git-lfs >/dev/null 2>&1; then
   "$mise_bin" exec -- git lfs install
-fi
-
-if [ "$(uname -s)" = Darwin ] && [ "$profile" = workstation ]; then
-  if ! command -v brew >/dev/null 2>&1; then
-    printf '%s\n' \
-      'Homebrew is required for the workstation applications.' \
-      'Install it from https://brew.sh and run dotfiles-bootstrap again.' >&2
-    exit 1
-  fi
-  brewfile=$(chezmoi execute-template '{{ .chezmoi.workingTree }}/Brewfile')
-  brew bundle --file "$brewfile"
 fi
 
 printf 'Dotfiles tool bootstrap complete.\n'

@@ -1,0 +1,3 @@
+# Read before any other mise configuration. auto_env makes mise load
+# config.macos.toml on macOS and config.linux.toml on Linux.
+auto_env = true
