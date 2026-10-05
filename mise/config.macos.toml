@@ -1,7 +1,7 @@
 # Homebrew packages and dotfiles for macOS. mise loads this file only on
 # macOS (see miserc.toml) and installs packages into the normal Homebrew
-# prefix, so `brew upgrade` and topgrade keep working. Add a package with:
-#   mise bootstrap packages use -p ~/.config/mise/config.macos.toml brew:<name>
+# prefix, so `brew upgrade` and topgrade keep working. Add packages with
+# `mise brew <formula>` or `mise cask <app>` (the tasks at the end).
 
 [bootstrap.brew]
 # Keep apps that were installed by hand instead of replacing them.
@@ -42,3 +42,14 @@ adopt = true
 "~/.ssh/config" = { source = "~/.dotfiles/macos/ssh_config", mode = "copy", permissions = "0600" }
 # Link each file so the modules that env.nu generates stay out of the repo.
 "~/Library/Application Support/nushell" = { source = "~/.dotfiles/macos/nushell", mode = "symlink-each" }
+
+# Install packages and record them in this file.
+[tasks.brew]
+description = "Install Homebrew formulae and add them to config.macos.toml"
+usage = 'arg "<formula>" var=#true'
+run = "mise bootstrap packages use -p ~/.config/mise/config.macos.toml{% for name in usage.formula %} brew:{{ name }}{% endfor %}"
+
+[tasks.cask]
+description = "Install Homebrew casks and add them to config.macos.toml"
+usage = 'arg "<app>" var=#true'
+run = "mise bootstrap packages use -p ~/.config/mise/config.macos.toml{% for name in usage.app %} brew-cask:{{ name }}{% endfor %}"

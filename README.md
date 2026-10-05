@@ -110,15 +110,45 @@ disable_tools = ["npm:@openai/codex"]
 
 ## Daily use
 
+Install things with `mise` in front of the usual command. Each one installs the
+package and records it in the repository:
+
+| Instead of | Run | Recorded in |
+| --- | --- | --- |
+| a new CLI or runtime | `mise use -g <tool>` | `config.toml` |
+| `brew install <formula>` | `mise brew <formula>` | `config.macos.toml` |
+| `brew install --cask <app>` | `mise cask <app>` | `config.macos.toml` |
+| `apt install <package>` | `mise apt <package>` | `config.linux.toml` |
+| `dnf install <package>` | `mise dnf <package>` | `config.linux.toml` |
+
+Edit dotfiles in place, except `~/.gitconfig` and `~/.ssh/config` (see above).
+To manage a new file, move it into `common/`, `macos/`, or `linux/`, add it to
+the `[dotfiles]` table of the matching mise file, and run `mise dot apply`.
+
+Then review and commit the changes:
+
 ```sh
-mise dot status
-mise dot diff
-mise dot apply
-git -C ~/.dotfiles pull && mise bootstrap
-mise use -g <tool>
-mise bootstrap packages use -p ~/.config/mise/config.macos.toml brew:<formula>
-mise bootstrap packages use -p ~/.config/mise/config.macos.toml brew-cask:<app>
+git -C ~/.dotfiles status
 ```
+
+On the other machines, pull and apply everything that changed:
+
+```sh
+git -C ~/.dotfiles pull
+mise bootstrap
+```
+
+To find drift:
+
+```sh
+mise dot status --missing
+mise bootstrap packages status
+mise bootstrap packages import --manager brew --dry-run -p ~/.config/mise/config.macos.toml
+```
+
+The last command lists Homebrew formulae installed with plain `brew install`
+that are not recorded yet. It does not cover casks; compare those with
+`brew list --cask`.
 
 For anonymous fetches and authenticated authoring, use separate remote URLs:
 

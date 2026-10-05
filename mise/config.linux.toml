@@ -1,6 +1,8 @@
 # System packages and dotfiles for Linux. mise loads this file only on Linux
 # (see miserc.toml) and skips package managers the machine doesn't have, so the
 # apt entries apply to Debian and Ubuntu and the dnf entries apply to Fedora.
+# Add packages with `mise apt <package>` or `mise dnf <package>` (the tasks at
+# the end).
 
 [bootstrap.packages]
 "apt:build-essential" = "latest"
@@ -29,3 +31,14 @@
 "~/.bashrc" = "~/.dotfiles/linux/bashrc"
 "~/.bash_profile" = "~/.dotfiles/linux/bash_profile"
 "~/.ssh/config" = { source = "~/.dotfiles/linux/ssh_config", mode = "copy", permissions = "0600" }
+
+# Install packages and record them in this file.
+[tasks.apt]
+description = "Install APT packages and add them to config.linux.toml"
+usage = 'arg "<package>" var=#true'
+run = "mise bootstrap packages use -p ~/.config/mise/config.linux.toml{% for name in usage.package %} apt:{{ name }}{% endfor %}"
+
+[tasks.dnf]
+description = "Install DNF packages and add them to config.linux.toml"
+usage = 'arg "<package>" var=#true'
+run = "mise bootstrap packages use -p ~/.config/mise/config.linux.toml{% for name in usage.package %} dnf:{{ name }}{% endfor %}"
