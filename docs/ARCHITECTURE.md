@@ -7,31 +7,33 @@ and developer-tool configuration. It does not provision operating-system
 accounts, SSH servers, firewalls, container daemons, production services, or
 cloud infrastructure.
 
-Chezmoi owns dotfiles. Mise owns language runtimes, portable command-line
-tools, and system packages: Homebrew formulae and casks on macOS, APT or DNF
-packages on Linux.
+Mise owns everything: dotfiles, language runtimes, portable command-line tools,
+and system packages (Homebrew formulae and casks on macOS, APT or DNF packages
+on Linux). `bootstrap.sh` only installs mise, clones the repository, and links
+the mise configuration so mise can find the rest.
 
 ## Machine selection
 
-Initialization records two pieces of local data:
-
-- `profile`: `workstation` or `server`
-- `manageSystemPackages`: whether bootstrap may invoke the native package
-  manager and sudo
-
-Dotfile behavior comes from `.chezmoi.os`. Tool and package behavior comes from
-mise's `auto_env` setting, which loads `config.macos.toml` or
-`config.linux.toml`. On Linux, mise skips package managers the machine does not
-have, so APT entries apply to Debian and Ubuntu and DNF entries to Fedora. Unix
+Mise's `auto_env` setting, enabled in `miserc.toml`, loads `config.macos.toml`
+on macOS and `config.linux.toml` on Linux, so no file needs an operating-system
+condition. On Linux, mise skips package managers the machine does not have, so
+APT entries apply to Debian and Ubuntu and DNF entries to Fedora. Unix
 usernames and hostnames do not select configuration.
 
-## Mise configuration
+Machine-specific overrides, such as tools to skip or `system_packages.sudo`,
+go in `~/.config/mise/config.local.toml`, which stays outside the repository.
 
-Mise writes to its global configuration when tools or packages are added, so
-those files are not chezmoi templates. The repository keeps them in `mise/`,
-and chezmoi links each file in `~/.config/mise/` to its repository copy.
-Machine-specific overrides go in `~/.config/mise/config.local.toml`, which
-stays outside the repository.
+## Dotfile deployment
+
+Mise writes to its global configuration when tools or packages are added, and
+people edit their shell files in place, so most dotfiles are symbolic links
+into the repository rather than rendered copies. The repository has no
+templates.
+
+`~/.gitconfig` and `~/.ssh/config` are copied instead. Programs such as
+credential helpers and VPN clients add private data to them, and a link would
+put that data in the public working tree. The SSH copy keeps mode `0600`, and
+`~/.ssh` and `~/.local` keep mode `0700`.
 
 ## Repository boundary
 
@@ -50,24 +52,17 @@ files are the boundary for machine-specific connectivity.
 
 ## Source layout
 
-`.chezmoiroot` maps `home/` onto the destination home directory. Files outside
-`home/` are repository support files and are not applied by chezmoi, except
-that chezmoi links the files in `mise/` into `~/.config/mise/`.
-
 ```text
 .
-├── .chezmoiroot
 ├── bootstrap.sh
+├── common/       files for every machine
 ├── docs/
+├── linux/        files for Linux
+├── macos/        files for macOS
 ├── mise/
 │   ├── config.toml
 │   ├── config.macos.toml
 │   ├── config.linux.toml
 │   └── miserc.toml
-├── tests/
-└── home/
-    ├── .chezmoi.toml.tmpl
-    ├── .chezmoiignore.tmpl
-    ├── .chezmoitemplates/
-    └── managed home-directory state
+└── tests/
 ```

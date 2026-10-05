@@ -1,6 +1,6 @@
-# Homebrew packages for macOS. mise loads this file only on macOS (see
-# miserc.toml) and installs into the normal Homebrew prefix, so `brew upgrade`
-# and topgrade keep working. Add a package with:
+# Homebrew packages and dotfiles for macOS. mise loads this file only on
+# macOS (see miserc.toml) and installs packages into the normal Homebrew
+# prefix, so `brew upgrade` and topgrade keep working. Add a package with:
 #   mise bootstrap packages use -p ~/.config/mise/config.macos.toml brew:<name>
 
 [bootstrap.brew]
@@ -33,3 +33,12 @@ adopt = true
 "brew-cask:dockdoor" = "latest"
 "brew-cask:macpacker" = "latest"
 "brew-cask:orbstack" = "latest"
+
+[dotfiles]
+"~/.profile" = "~/.dotfiles/macos/profile"
+"~/.zprofile" = "~/.dotfiles/macos/zprofile"
+"~/.zshenv" = "~/.dotfiles/macos/zshenv"
+"~/.zshrc" = "~/.dotfiles/macos/zshrc"
+"~/.ssh/config" = { source = "~/.dotfiles/macos/ssh_config", mode = "copy", permissions = "0600" }
+# Link each file so the modules that env.nu generates stay out of the repo.
+"~/Library/Application Support/nushell" = { source = "~/.dotfiles/macos/nushell", mode = "symlink-each" }

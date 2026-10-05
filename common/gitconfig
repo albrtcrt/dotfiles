@@ -1,6 +1,6 @@
 [user]
-	name = {{ .gitName }}
-	email = {{ .gitEmail }}
+	name = albrtcrt
+	email = 85366724+albrtcrt@users.noreply.github.com
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
