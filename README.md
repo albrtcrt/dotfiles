@@ -110,16 +110,28 @@ disable_tools = ["npm:@openai/codex"]
 
 ## Daily use
 
-Install things with `mise` in front of the usual command. Each one installs the
-package and records it in the repository:
+Put `mise` in front of the usual install or uninstall command. It changes the
+machine and records the change in the repository:
 
 | Instead of | Run | Recorded in |
 | --- | --- | --- |
-| a new CLI or runtime | `mise use -g <tool>` | `config.toml` |
-| `brew install <formula>` | `mise brew <formula>` | `config.macos.toml` |
-| `brew install --cask <app>` | `mise cask <app>` | `config.macos.toml` |
-| `apt install <package>` | `mise apt <package>` | `config.linux.toml` |
-| `dnf install <package>` | `mise dnf <package>` | `config.linux.toml` |
+| `brew install <formula>` | `mise brew install <formula>` | `config.macos.toml` |
+| `brew install --cask <app>` | `mise brew install --cask <app>` | `config.macos.toml` |
+| `brew uninstall [--cask] <name>` | `mise brew uninstall [--cask] <name>` | `config.macos.toml` |
+| `apt install <package>` | `mise apt install <package>` | `config.linux.toml` |
+| `apt remove <package>` | `mise apt remove <package>` | `config.linux.toml` |
+| `dnf install <package>` | `mise dnf install <package>` | `config.linux.toml` |
+| `dnf remove <package>` | `mise dnf remove <package>` | `config.linux.toml` |
+
+The word `install` is optional (`mise brew jq`), and `mise cask <app>` is short
+for `mise brew install --cask <app>`. Other commands, such as `upgrade`, are not
+recorded: use the package manager directly. Uninstalling an app that Homebrew
+did not install, such as one installed by hand, removes it from the list and
+asks you to delete the app yourself.
+
+For command-line tools and runtimes managed by mise itself, use
+`mise use -g <tool>` and `mise unuse -g <tool>`; they record the change in
+`config.toml`.
 
 Edit dotfiles in place, except `~/.gitconfig` and `~/.ssh/config` (see above).
 To manage a new file, move it into `common/`, `macos/`, or `linux/`, add it to
