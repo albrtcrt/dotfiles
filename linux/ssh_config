@@ -1,0 +1,8 @@
+# Machine-specific hosts and identity files belong in this unmanaged directory.
+# Includes are intentionally first so local values win over generic defaults.
+Include ~/.ssh/config.d/*
+
+Host github.com
+    HostName github.com
+    User git
+    AddKeysToAgent yes

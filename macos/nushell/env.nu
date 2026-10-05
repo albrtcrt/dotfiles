@@ -5,7 +5,7 @@ if "/opt/homebrew/bin" not-in $env.PATH {
 }
 
 # These modules are generated before config.nu is parsed. They are deliberately
-# machine state, not chezmoi-managed dotfiles, so they can track tool updates.
+# machine state, not repository files, so they can track tool updates.
 let mise_path = $nu.default-config-dir | path join "mise.nu"
 let carapace_path = $nu.default-config-dir | path join "carapace.nu"
 let carapace_version_path = $nu.default-config-dir | path join "carapace.version"

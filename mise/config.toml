@@ -1,9 +1,8 @@
-# Tools for every machine. ~/.config/mise/config.toml links to this file, so
-# `mise use -g <tool>` records the tool here.
+# Tools and dotfiles for every machine. ~/.config/mise/config.toml links to this
+# file, so `mise use -g <tool>` records the tool here.
 min_version = "2026.10.0"
 
 [tools]
-chezmoi = "latest"
 ripgrep = "latest"
 go = "latest"
 golangci-lint = "latest"
@@ -21,3 +20,15 @@ git-lfs = "latest"
 zellij = "latest"
 "npm:@openai/codex" = "latest"
 claude = "latest"
+
+# Linked files edit the repository directly. Git and SSH settings are copied
+# instead, because other programs add credentials and private hosts to them.
+[dotfiles]
+"~/.config/mise/config.toml" = "~/.dotfiles/mise/config.toml"
+"~/.config/mise/config.macos.toml" = "~/.dotfiles/mise/config.macos.toml"
+"~/.config/mise/config.linux.toml" = "~/.dotfiles/mise/config.linux.toml"
+"~/.config/mise/miserc.toml" = "~/.dotfiles/mise/miserc.toml"
+"~/.vimrc" = "~/.dotfiles/common/vimrc"
+"~/.gitconfig" = { source = "~/.dotfiles/common/gitconfig", mode = "copy" }
+"~/.local" = { permissions = "0700" }
+"~/.ssh" = { permissions = "0700" }
