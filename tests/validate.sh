@@ -8,6 +8,7 @@ sh -n "$repository_root/linux/bash_profile"
 sh -n "$repository_root/linux/bashrc"
 sh -n "$repository_root/linux/profile"
 sh -n "$repository_root/macos/profile"
+sh -n "$repository_root/mise/packages.sh"
 
 if [ "$(uname -s)" = Linux ]; then
   bash_prompt=$(
@@ -130,6 +131,39 @@ for private_path in .local:700 .ssh:700 .ssh/config:600; do
     exit 1
   fi
 done
+
+# Uninstalling through packages.sh removes the declaration and calls the
+# package manager. Use a copy of the configuration and a stub brew, so the
+# repository and the machine stay untouched.
+package_home="$validation_dir/package-home"
+mkdir -p "$package_home/.config/mise" "$validation_dir/stub"
+cp "$repository_root/mise/config.macos.toml" "$package_home/.config/mise/"
+cat >"$validation_dir/stub/brew" <<'EOF'
+#!/bin/sh
+case "$*" in
+  'list --cask boop') exit 0 ;;
+  *) printf '%s\n' "brew $*" >>"$STUB_LOG" ;;
+esac
+EOF
+chmod +x "$validation_dir/stub/brew"
+
+STUB_LOG="$validation_dir/stub.log" HOME="$package_home" \
+  PATH="$validation_dir/stub:$PATH" \
+  sh "$repository_root/mise/packages.sh" brew uninstall --cask boop >/dev/null
+
+if grep -q '"brew-cask:boop"' "$package_home/.config/mise/config.macos.toml"; then
+  printf 'packages.sh did not remove the uninstalled cask.\n' >&2
+  exit 1
+fi
+if [ "$(cat "$validation_dir/stub.log")" != 'brew uninstall --cask boop' ]; then
+  printf 'packages.sh did not uninstall the cask with brew.\n' >&2
+  exit 1
+fi
+if HOME="$package_home" sh "$repository_root/mise/packages.sh" brew upgrade \
+  2>/dev/null; then
+  printf 'packages.sh accepted an unsupported command.\n' >&2
+  exit 1
+fi
 
 if [ "$(uname -s)" = Linux ]; then
   login_path=$(

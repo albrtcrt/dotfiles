@@ -20,6 +20,11 @@ condition. On Linux, mise skips package managers the machine does not have, so
 APT entries apply to Debian and Ubuntu and DNF entries to Fedora. Unix
 usernames and hostnames do not select configuration.
 
+Each operating-system file also defines the tasks that install or uninstall
+packages and record the change in that file: `brew` and `cask` on macOS, `apt`
+and `dnf` on Linux. They share `mise/packages.sh`, because mise has no command
+that removes a package declaration.
+
 Machine-specific overrides, such as tools to skip or `system_packages.sudo`,
 go in `~/.config/mise/config.local.toml`, which stays outside the repository.
 
@@ -63,6 +68,7 @@ files are the boundary for machine-specific connectivity.
 │   ├── config.toml
 │   ├── config.macos.toml
 │   ├── config.linux.toml
-│   └── miserc.toml
+│   ├── miserc.toml
+│   └── packages.sh
 └── tests/
 ```
