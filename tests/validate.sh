@@ -180,8 +180,8 @@ if HOME="$package_home" PATH="$validation_dir/stub:$PATH" \
   printf 'packages.sh reported success for a failed installation.\n' >&2
   exit 1
 fi
-if ! cmp -s "$validation_dir/before.toml" \
-  "$package_home/.config/mise/config.macos.toml"; then
+if [ "$(cat "$validation_dir/before.toml")" != \
+  "$(cat "$package_home/.config/mise/config.macos.toml")" ]; then
   printf 'packages.sh kept the entry of a failed installation.\n' >&2
   exit 1
 fi
