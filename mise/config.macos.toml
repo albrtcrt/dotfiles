@@ -4,6 +4,12 @@
 # with `mise brew install <formula>` or `mise brew uninstall <formula>` (the
 # tasks at the end).
 
+# mise reads casks and formulae from taps without published metadata, such as
+# saffsanity/sill, by evaluating their Ruby definitions. Homebrew itself runs
+# them with the latest Ruby, so follow it.
+[tools]
+ruby = "latest"
+
 [bootstrap.brew]
 # Keep apps that were installed by hand instead of replacing them.
 adopt = true
@@ -34,6 +40,7 @@ adopt = true
 "brew-cask:dockdoor" = "latest"
 "brew-cask:macpacker" = "latest"
 "brew-cask:orbstack" = "latest"
+"brew-cask:saffsanity/sill/sill" = "latest"
 
 [dotfiles]
 "~/.profile" = "~/.dotfiles/macos/profile"

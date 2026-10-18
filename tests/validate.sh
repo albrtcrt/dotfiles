@@ -165,6 +165,27 @@ if HOME="$package_home" sh "$repository_root/mise/packages.sh" brew upgrade \
   exit 1
 fi
 
+# A failed installation must not leave its entry behind. The stub mise records
+# the package and then fails, as mise does when it cannot read a cask.
+cat >"$validation_dir/stub/mise" <<'EOF'
+#!/bin/sh
+printf '"brew-cask:broken" = "latest"\n' >>"$HOME/.config/mise/config.macos.toml"
+exit 1
+EOF
+chmod +x "$validation_dir/stub/mise"
+cp "$package_home/.config/mise/config.macos.toml" "$validation_dir/before.toml"
+
+if HOME="$package_home" PATH="$validation_dir/stub:$PATH" \
+  sh "$repository_root/mise/packages.sh" cask install broken 2>/dev/null; then
+  printf 'packages.sh reported success for a failed installation.\n' >&2
+  exit 1
+fi
+if [ "$(cat "$validation_dir/before.toml")" != \
+  "$(cat "$package_home/.config/mise/config.macos.toml")" ]; then
+  printf 'packages.sh kept the entry of a failed installation.\n' >&2
+  exit 1
+fi
+
 if [ "$(uname -s)" = Linux ]; then
   login_path=$(
     HOME="$home" PATH=/usr/bin:/bin \

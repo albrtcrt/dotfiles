@@ -129,6 +129,10 @@ recorded: use the package manager directly. Uninstalling an app that Homebrew
 did not install, such as one installed by hand, removes it from the list and
 asks you to delete the app yourself.
 
+If an installation fails, nothing is recorded. Packages from third-party taps
+that publish no metadata are read with Ruby, which `config.macos.toml` installs
+through mise.
+
 For command-line tools and runtimes managed by mise itself, use
 `mise use -g <tool>` and `mise unuse -g <tool>`; they record the change in
 `config.toml`.

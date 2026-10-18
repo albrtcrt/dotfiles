@@ -68,7 +68,15 @@ if [ "$action" = install ]; then
   for name in $names; do
     set -- "$@" "$prefix$name"
   done
-  exec mise bootstrap packages use -p "$config" "$@"
+  # mise records the packages before installing them; keep the file unchanged
+  # when the installation fails, so a broken entry cannot block later runs.
+  before=$(cat "$config")
+  if ! mise bootstrap packages use -p "$config" "$@"; then
+    printf '%s\n' "$before" >"$config"
+    printf 'Installation failed; %s was left unchanged.\n' "$file" >&2
+    exit 1
+  fi
+  exit 0
 fi
 
 # Remove the declarations first, so the next `mise bootstrap` does not
