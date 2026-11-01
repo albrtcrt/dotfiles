@@ -20,6 +20,7 @@ git-lfs = "latest"
 zellij = "latest"
 "npm:@openai/codex" = "latest"
 claude = "latest"
+herdr = "latest"
 
 # Linked files edit the repository directly. Git and SSH settings are copied
 # instead, because other programs add credentials and private hosts to them.
